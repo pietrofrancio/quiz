@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliação de Treinamento Industrial - IoT e Automação</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* slate-100 */
+        }
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .option-btn {
+            transition: all 0.2s ease;
+        }
+        .option-btn.selected {
+            background-color: #1e3a8a; /* blue-900 */
+            color: white;
+            border-color: #1e3a8a;
+        }
+        .option-btn.correct {
+            background-color: #166534; /* green-800 */
+            color: white;
+            border-color: #166534;
+        }
+        .option-btn.wrong {
+            background-color: #991b1b; /* red-800 */
+            color: white;
+            border-color: #991b1b;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex items-center justify-center p-4">
+
+    <!-- Container Principal -->
+    <div class="max-w-3xl w-full bg-white rounded-2xl shadow-xl overflow-hidden relative">
+        
+        <!-- Header -->
+        <header class="bg-blue-900 text-white p-6 text-center">
+            <h1 class="text-2xl font-bold tracking-wide">Avaliação de Treinamento Industrial</h1>
+            <p class="text-blue-200 mt-2 font-medium">IoT, Instrumentação e Automação</p>
+        </header>
+
+        <div class="p-6 md:p-10 min-h-[400px] flex flex-col justify-center">
+            
+            <!-- Tela Inicial -->
+            <div id="start-screen" class="text-center fade-in">
+                <div class="bg-slate-100 p-6 rounded-xl mb-8 border border-slate-200">
+                    <h2 class="text-xl font-semibold text-slate-800 mb-3">Bem-vindo(a) à Avaliação!</h2>
+                    <p class="text-slate-600 mb-4 leading-relaxed">
+                        Este quiz foi desenvolvido para avaliar e consolidar os conhecimentos adquiridos nos treinamentos de capacitação técnica da empresa. O objetivo é garantir a confiabilidade e rastreabilidade nos processos de manutenção e modernização de nossas linhas de produção.
+                    </p>
+                    <ul class="text-left text-sm text-slate-600 space-y-2 inline-block">
+                        <li>⏱️ 10 questões de múltipla escolha.</li>
+                        <li>🎯 Apenas uma alternativa correta por questão.</li>
+                        <li>📊 Feedback de desempenho ao final.</li>
+                    </ul>
+                </div>
+                <button onclick="startQuiz()" class="bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition-colors text-lg">
+                    Iniciar Quiz
+                </button>
+            </div>
+
+            <!-- Tela do Quiz -->
+            <div id="quiz-screen" class="hidden flex-col w-full h-full">
+                <div class="flex justify-between items-center mb-6 border-b border-slate-200 pb-4">
+                    <span id="question-counter" class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Questão 1 de 10</span>
+                    <span class="text-sm font-medium text-blue-800 bg-blue-100 py-1 px-3 rounded-full">IIoT & Automação</span>
+                </div>
+                
+                <h3 id="question-text" class="text-lg md:text-xl font-semibold text-slate-800 mb-6 leading-tight fade-in">
+                    <!-- Texto da pergunta entra aqui -->
+                </h3>
+
+                <div id="options-container" class="space-y-3 flex-grow fade-in">
+                    <!-- Alternativas entram aqui -->
+                </div>
+
+                <div class="mt-8 flex justify-end">
+                    <button id="next-btn" onclick="nextQuestion()" class="hidden bg-blue-700 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg transition-colors">
+                        Próxima Questão
+                    </button>
+                    <button id="finish-btn" onclick="showResults()" class="hidden bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors">
+                        Finalizar Quiz
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tela de Resultados -->
+            <div id="result-screen" class="hidden text-center fade-in">
+                <div id="score-icon" class="text-6xl mb-4">🏆</div>
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">Desempenho Final</h2>
+                <div class="text-5xl font-extrabold text-blue-700 my-6" id="score-display">0 / 10</div>
+                <p id="feedback-message" class="text-lg text-slate-600 mb-8 font-medium">
+                    <!-- Feedback message entra aqui -->
+                </p>
+                <button onclick="restartQuiz()" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition-colors text-lg">
+                    Refazer o Quiz
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Banco de Questões
+        const questions = [
+            {
+                question: "O que caracteriza a IoT Industrial (IIoT) em comparação com a IoT tradicional?",
+                options: [
+                    "Foco exclusivo em automação de escritórios e controle de iluminação.",
+                    "Maior exigência de confiabilidade, segurança robusta e integração com sistemas legados industriais (SCADA/CLP).",
+                    "Utilização apenas de conexões Bluetooth de curto alcance sem segurança cibernética.",
+                    "Descarte total de redes locais, operando exclusivamente na nuvem pública corporativa."
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Qual protocolo de comunicação é amplamente conhecido por sua leveza, modelo Publish/Subscribe e uso em telemetria de sensores IoT em ambientes industriais?",
+                options: [
+                    "HTTP (Hypertext Transfer Protocol)",
+                    "FTP (File Transfer Protocol)",
+                    "MQTT (Message Queuing Telemetry Transport)",
+                    "SMTP (Simple Mail Transfer Protocol)"
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "Na modernização de linhas de produção, qual a principal função de um CLP (Controlador Lógico Programável)?",
+                options: [
+                    "Gerenciar a folha de pagamento e o ERP dos funcionários da fábrica.",
+                    "Processar dados de vídeo em alta resolução para ações de marketing corporativo.",
+                    "Controlar, monitorar e comandar máquinas e processos industriais de forma robusta e em tempo real.",
+                    "Servir exclusivamente como roteador de internet sem fio para os dispositivos móveis no chão de fábrica."
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "Para garantir a rastreabilidade e evitar retrabalhos nas medições, qual a importância fundamental da calibração regular dos sensores industriais?",
+                options: [
+                    "Garantir que as medições permaneçam precisas, confiáveis e dentro das tolerâncias estipuladas ao longo do tempo.",
+                    "Aumentar o consumo de energia do sensor para garantir que ele transmita com maior potência.",
+                    "Alterar a interface visual do sensor para que ele pareça atualizado no painel elétrico.",
+                    "Fazer com que o sensor se comunique em múltiplos protocolos sem necessidade de gateway."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "O que difere um Robô Industrial tradicional de um Robô Colaborativo (Cobot)?",
+                options: [
+                    "Robôs tradicionais são muito menores e mais lentos que os Cobots para evitar acidentes.",
+                    "Cobots são projetados com recursos avançados de força e sensoriamento para trabalhar de forma segura no mesmo espaço físico que humanos, sem necessidade de gaiolas.",
+                    "Cobots operam exclusivamente em ambientes subaquáticos ou de alta periculosidade química.",
+                    "Cobots não podem ser programados por código, eles apenas repetem movimentos baseados em comandos de voz."
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Em um painel elétrico de automação, qual componente é responsável por converter o sinal elétrico recebido do controlador em uma ação física (movimento, pressão, fluxo) na linha de produção?",
+                options: [
+                    "Sensor",
+                    "Roteador (Gateway)",
+                    "Atuador (ex: cilindros pneumáticos, válvulas, motores)",
+                    "Switch de Rede"
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "O que é 'Edge Computing' (Computação de Borda) e por que é uma tecnologia útil na indústria moderna?",
+                options: [
+                    "O envio de 100% dos dados brutos para processamento em servidores de nuvem pública fora do país.",
+                    "O processamento de dados próximo à fonte geradora (no próprio chão de fábrica), o que reduz a latência, economiza banda de rede e permite decisões críticas rápidas.",
+                    "Uma técnica puramente mecânica para organizar cabos de cobre nas bordas dos painéis elétricos.",
+                    "O desligamento automático dos sensores de borda da esteira durante os intervalos de turno."
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Qual tipo de sensor é mais indicado para medir a distância ou detectar a presença de um objeto metálico em uma esteira, garantindo longa vida útil por operar sem contato físico?",
+                options: [
+                    "Sensor de Temperatura Termopar",
+                    "Sensor Indutivo",
+                    "Sensor de Umidade Relativa",
+                    "Sensor de PH"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Como a implementação da IIoT atua fortemente na Manutenção Preditiva?",
+                options: [
+                    "Substituindo completamente a necessidade de uma equipe de engenharia e manutenção humana.",
+                    "Coletando dados contínuos de vibração, temperatura e corrente das máquinas para prever falhas antes que ocorram, otimizando o agendamento de paradas.",
+                    "Realizando o conserto automático de peças mecânicas quebradas através de impressoras 3D integradas aos CLPs.",
+                    "Gerando relatórios e alertas apenas no momento exato em que a máquina sofre uma quebra total (manutenção corretiva)."
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "O que significa 'Latência' na comunicação de dados entre sensores de chão de fábrica e o sistema supervisório, e por que ela deve ser rigorosamente baixa?",
+                options: [
+                    "É o tempo de atraso na transmissão dos pacotes de dados; deve ser baixa para garantir que o sistema responda rapidamente a eventos críticos e mantenha o controle do processo estável.",
+                    "É a quantidade de energia elétrica que o sensor consome; deve ser baixa para economizar a bateria interna do equipamento ao longo dos anos.",
+                    "É a temperatura operacional do cabo de rede industrial; deve ser mantida baixa para evitar o derretimento do isolamento.",
+                    "É o tamanho físico da carga útil (payload) do pacote de dados; deve ser pequena para não sobrecarregar a memória RAM do CLP."
+                ],
+                correctAnswer: 0
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let hasAnswered = false;
+
+        // Referências do DOM
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const questionCounter = document.getElementById('question-counter');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        const scoreDisplay = document.getElementById('score-display');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const scoreIcon = document.getElementById('score-icon');
+
+        function startQuiz() {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            hasAnswered = false;
+            nextBtn.classList.add('hidden');
+            finishBtn.classList.add('hidden');
+            
+            // Remover e readicionar a classe de animação para resetar
+            questionText.classList.remove('fade-in');
+            optionsContainer.classList.remove('fade-in');
+            void questionText.offsetWidth; // Trigger reflow
+            questionText.classList.add('fade-in');
+            optionsContainer.classList.add('fade-in');
+
+            const currentQuestion = questions[currentQuestionIndex];
+            questionCounter.innerText = `Questão ${currentQuestionIndex + 1} de ${questions.length}`;
+            questionText.innerText = currentQuestion.question;
+
+            optionsContainer.innerHTML = '';
+            
+            const labels = ['A', 'B', 'C', 'D'];
+
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn w-full text-left p-4 rounded-lg border-2 border-slate-200 hover:bg-blue-50 text-slate-700 font-medium flex items-center';
+                button.innerHTML = `
+                    <span class="flex-shrink-0 w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center mr-4 font-bold text-sm">
+                        ${labels[index]}
+                    </span>
+                    <span class="flex-grow">${option}</span>
+                `;
+                button.onclick = () => selectAnswer(index, button);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedIndex, selectedButton) {
+            if (hasAnswered) return; // Impede múltiplas seleções
+            hasAnswered = true;
+
+            const currentQuestion = questions[currentQuestionIndex];
+            const isCorrect = selectedIndex === currentQuestion.correctAnswer;
+            const allButtons = optionsContainer.querySelectorAll('.option-btn');
+
+            if (isCorrect) {
+                score++;
+                selectedButton.classList.remove('border-slate-200', 'hover:bg-blue-50', 'text-slate-700');
+                selectedButton.classList.add('correct');
+                selectedButton.querySelector('span').classList.remove('bg-slate-200', 'text-slate-600');
+                selectedButton.querySelector('span').classList.add('bg-white', 'text-green-800');
+            } else {
+                selectedButton.classList.remove('border-slate-200', 'hover:bg-blue-50', 'text-slate-700');
+                selectedButton.classList.add('wrong');
+                selectedButton.querySelector('span').classList.remove('bg-slate-200', 'text-slate-600');
+                selectedButton.querySelector('span').classList.add('bg-white', 'text-red-800');
+                
+                // Destacar a correta se o usuário errar
+                const correctBtn = allButtons[currentQuestion.correctAnswer];
+                correctBtn.classList.remove('border-slate-200', 'hover:bg-blue-50', 'text-slate-700');
+                correctBtn.classList.add('correct', 'opacity-70');
+                correctBtn.querySelector('span').classList.remove('bg-slate-200', 'text-slate-600');
+                correctBtn.querySelector('span').classList.add('bg-white', 'text-green-800');
+            }
+
+            // Desabilitar botões após a escolha
+            allButtons.forEach(btn => {
+                btn.classList.add('cursor-not-allowed');
+                btn.onclick = null;
+            });
+
+            // Mostrar botão de próxima etapa
+            if (currentQuestionIndex < questions.length - 1) {
+                nextBtn.classList.remove('hidden');
+            } else {
+                finishBtn.classList.remove('hidden');
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            resultScreen.classList.add('fade-in');
+
+            scoreDisplay.innerText = `${score} / ${questions.length}`;
+
+            let feedback = "";
+            if (score === 10) {
+                scoreIcon.innerText = "🏆";
+                feedback = "Excelente! Você domina perfeitamente os conceitos de IoT Industrial e Automação aplicados à nossa realidade. Está totalmente preparado(a) para apoiar os processos de engenharia.";
+            } else if (score >= 7) {
+                scoreIcon.innerText = "🌟";
+                feedback = "Muito bom! Você possui um forte entendimento sobre a integração de dispositivos embarcados e protocolos. Com algumas revisões em pontos específicos, você atingirá a excelência.";
+            } else if (score >= 5) {
+                scoreIcon.innerText = "⚠️";
+                feedback = "Desempenho mediano. É fundamental revisar os materiais de treinamento, especialmente sobre as tecnologias críticas para a confiabilidade de medições e controle de latência.";
+            } else {
+                scoreIcon.innerText = "📚";
+                feedback = "Atenção: Precisa revisar os fundamentos. Recomendamos refazer os treinamentos básicos sobre sensoriamento, protocolos de dados e infraestrutura antes de seguir para os testes de campo.";
+            }
+
+            feedbackMessage.innerText = feedback;
+        }
+
+        function restartQuiz() {
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            startScreen.classList.add('fade-in');
+        }
+    </script>
+</body>
+</html>
